@@ -52,6 +52,7 @@ import funkin.play.notes.Strumline;
 import funkin.play.notes.SustainTrail;
 import funkin.play.notes.NoteVibrationsHandler;
 import funkin.play.scoring.Scoring;
+import funkin.play.scoring.SongScore;
 import funkin.play.song.Song;
 import funkin.play.stage.Stage;
 import funkin.save.Save;
@@ -1317,7 +1318,7 @@ class PlayState extends MusicBeatSubState
     processSongEvents();
 
     // Handle keybinds.
-    processInputQueue();
+    processInputQueue(elapsed);
     if (!isInCutscene && !disableKeys) debugKeyShit();
     if (isInCutscene && !disableKeys) handleCutsceneKeys(elapsed);
 
@@ -3191,10 +3192,10 @@ class PlayState extends MusicBeatSubState
     }
   }
 
-  function goodHoldNoteHit(note:SustainTrail, elapsed:Float):Void
+  function goodHoldNoteHit(holdNote:SustainTrail, elapsed:Float):Void
   {
     var healthChange:Float = Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
-    var scoreChange:Int = Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed;
+    var scoreChange:Int = Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
 
     var event:HoldNoteScriptEvent = new HoldNoteScriptEvent(NOTE_HOLD_HIT, holdNote, healthChange, scoreChange, false, Highscore.tallies.combo);
     dispatchEvent(event);
@@ -3202,9 +3203,9 @@ class PlayState extends MusicBeatSubState
     if (holdNote.scoreable)
     {
       health += event.healthChange;
-      SongScore.instance.pendingScore -= holdNote.appliedScore;
-      holdNote.appliedScore += event.score;
-      SongScore.instance.pendingScore += holdNote.appliedScore;
+      SongScore.instance.pendingPoints -= holdNote.appliedScore;
+      holdNote.appliedScore += Std.int(event.score);
+      SongScore.instance.pendingPoints += holdNote.appliedScore;
     }
 
     // Drop the held note if the event is cancelled.

@@ -20,6 +20,10 @@ class SongScore implements ISingleton
    */
   public var pendingPoints:Int = 0;
 
+  public function new()
+  {
+  }
+
   /**
    * Returns the current score points, excluding `pendingPoints`.
    * Should be used for retrieving the score, like when doing script shenanigans.
@@ -51,8 +55,7 @@ class SongScore implements ISingleton
   }
 
   /**
-   * Returns the current score points, including `pendingPoints`.
-   * Should be used for actually displaying the score.
+   * Adds points to the song score.
    * @param score The score to add
    */
   public function addScore(score:Float):Void
