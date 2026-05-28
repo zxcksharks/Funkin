@@ -458,6 +458,7 @@ class SustainTrail extends FlxSprite
 
     hitNote = false;
     missedNote = false;
+    endedNote = false;
   }
 
   override public function revive():Void
@@ -474,6 +475,8 @@ class SustainTrail extends FlxSprite
     hitNote = false;
     missedNote = false;
     handledMiss = false;
+    endedNote = false;
+    handledEnding = false;
   }
 
   override public function destroy():Void
