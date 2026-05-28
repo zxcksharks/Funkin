@@ -59,6 +59,12 @@ class SustainTrail extends FlxSprite
   public var scoreable:Bool = true;
 
   /**
+   * Used by PlayState to track how much display score the held note has already given.
+   * Does not influence the actual score; only the score shown while holding the note.
+   */
+  public var appliedScore:Int = 0;
+
+  /**
    * The Y Offset of the note.
    */
   public var yOffset:Float = 0.0;
@@ -437,6 +443,7 @@ class SustainTrail extends FlxSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;
@@ -451,6 +458,7 @@ class SustainTrail extends FlxSprite
     noteDirection = 0;
     sustainLength = 0;
     fullSustainLength = 0;
+    appliedScore = 0;
     noteData = null;
 
     hitNote = false;

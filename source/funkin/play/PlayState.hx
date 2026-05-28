@@ -237,13 +237,6 @@ class PlayState extends MusicBeatSubState
   public var health:Float = Constants.HEALTH_STARTING;
 
   /**
-   * The player's current score.
-   * This needs to be a float because you gain partial points as you hold a hold note,
-   * possibly less than one point each update depending on your framerate.
-   */
-  public var songScore:Float = 0;
-
-  /**
    * Start at this point in the song once the countdown is done.
    * For example, if `startTimestamp` is `30000`, the song will start at the 30 second mark.
    * Used for chart playtesting or practice.
@@ -1111,7 +1104,7 @@ class PlayState extends MusicBeatSubState
       cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
 
       health = Constants.HEALTH_STARTING;
-      songScore = 0.0;
+      SongScore.instance.reset();
       Highscore.tallies.combo = 0;
 
       // so the song doesn't start too early :D
@@ -1443,7 +1436,7 @@ class PlayState extends MusicBeatSubState
 
     vwooshTimer.cancel();
 
-    songScore = 0.0;
+    SongScore.instance.reset();
     updateScoreText();
 
     health = Constants.HEALTH_STARTING;
@@ -2756,7 +2749,7 @@ class PlayState extends MusicBeatSubState
     {
       final SHOW_DECIMALS:Bool = false;
       final COMMA_SEPARATED:Bool = true;
-      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(songScore, SHOW_DECIMALS, COMMA_SEPARATED)}';
+      scoreText.text = 'Score: ${FlxStringUtil.formatMoney(SongScore.instance.withPending(), SHOW_DECIMALS, COMMA_SEPARATED)}';
     }
   }
 
@@ -2940,7 +2933,7 @@ class PlayState extends MusicBeatSubState
         if (!isBotPlayMode && holdNote.scoreable)
         {
           health += event.healthChange;
-          songScore += event.score;
+          SongScore.instance.add(event.score);
         }
 
         // Drop the held note if the event is cancelled.
@@ -3071,7 +3064,7 @@ class PlayState extends MusicBeatSubState
 
         // Play the strumline animation.
         playerStrumline.playPress(input.noteDirection);
-        trace('PENALTY Score: ${songScore}');
+        trace('PENALTY Score: ${SongScore.instance.getScore()}');
       }
     else if (notesInDirection.length == 0)
     {
@@ -3079,7 +3072,7 @@ class PlayState extends MusicBeatSubState
 
       // Play the strumline animation.
       playerStrumline.playPress(input.noteDirection);
-      trace('NO PENALTY Score: ${songScore}');
+      trace('NO PENALTY Score: ${SongScore.instance.getScore()}');
     }
     else
     {
@@ -3222,7 +3215,7 @@ class PlayState extends MusicBeatSubState
     if (event.eventCanceled) return;
 
     health += event.healthChange;
-    songScore += event.scoreChange;
+    SongScore.instance.addScore(event.scoreChange);
 
     if (!isPracticeMode)
     {
@@ -3363,7 +3356,7 @@ class PlayState extends MusicBeatSubState
       Highscore.tallies.combo++;
       if (Highscore.tallies.combo > Highscore.tallies.maxCombo) Highscore.tallies.maxCombo = Highscore.tallies.combo;
     }
-    songScore += score;
+    SongScore.instance.addScore(score);
   }
 
   /**
@@ -3491,7 +3484,7 @@ class PlayState extends MusicBeatSubState
     {
       // crackhead double thingie, sets whether was new highscore, AND saves the song!
       var data = {
-        score: Std.int(songScore),
+        score: SongScore.instance.getScoreInt(),
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3509,7 +3502,7 @@ class PlayState extends MusicBeatSubState
       Highscore.talliesLevel = Highscore.combineTallies(Highscore.tallies, Highscore.talliesLevel);
 
       #if FEATURE_NEWGROUNDS
-      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, Std.int(songScore));
+      Leaderboards.submitSongScore(currentSong.id, suffixedDifficulty, SongScore.instance.getScoreInt());
       #end
 
       if (!isPracticeMode && !isBotPlayMode)
@@ -3540,7 +3533,7 @@ class PlayState extends MusicBeatSubState
 
       // Determine the score rank for this song we just finished.
       var scoreRank:Null<ScoringRank> = Scoring.calculateRank({
-        score: Std.int(songScore),
+        score: SongScore.instance.getScoreInt(),
         tallies: {
           sick: Highscore.tallies.sick,
           good: Highscore.tallies.good,
@@ -3575,7 +3568,7 @@ class PlayState extends MusicBeatSubState
     {
       isNewHighscore = false;
 
-      PlayStatePlaylist.campaignScore += Std.int(songScore);
+      PlayStatePlaylist.campaignScore += SongScore.instance.getScoreInt();
 
       // Pop the next song ID from the list.
       // Returns null if the list is empty.
@@ -3899,7 +3892,7 @@ class PlayState extends MusicBeatSubState
       title: PlayStatePlaylist.isStoryMode ? ('${PlayStatePlaylist.campaignTitle}') : ('${currentChart.songName} by ${currentChart.songArtist}'),
       prevScoreData: prevScoreData,
       scoreData: {
-        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : Std.int(songScore),
+        score: PlayStatePlaylist.isStoryMode ? PlayStatePlaylist.campaignScore : SongScore.instance.getScoreInt(),
         tallies: {
           sick: talliesToUse.sick,
           good: talliesToUse.good,
