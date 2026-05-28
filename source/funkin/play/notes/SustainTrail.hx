@@ -86,6 +86,16 @@ class SustainTrail extends FlxSprite
    */
   public var handledMiss:Bool = false;
 
+  /**
+   * Set to `true` when the user successfully exhausts the hold, or if they let go too early.
+   */
+  public var endedNote:Bool = false;
+
+  /**
+   * Set to `true` after handling additional logic for completing notes.
+   */
+  public var handledEnding:Bool = false;
+
   // maybe BlendMode.MULTIPLY if missed somehow, drawTriangles does not support!
 
   /**

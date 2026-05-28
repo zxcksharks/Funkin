@@ -3073,16 +3073,19 @@ class PlayState extends MusicBeatSubState
         goodHoldNoteHit(holdNote, elapsed);
       }
 
+      if (holdNote.endedNote && !holdNote.handledEnding)
+      {
+        goodHoldNoteRelease(holdNote, releaseByDirection[holdNote.noteDirection]);
+        holdNote.visible = false;
+        holdNote.kill();
+      }
+
       if (holdNote.missedNote && !holdNote.handledMiss)
       {
         // The player dropped a hold note.
         holdNote.handledMiss = true;
 
-        // Mute vocals and play miss animation.
-        // vocals.playerVolume = 0;
-        // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
-
-        if (!isBotPlayMode && holdNote.scoreable)
+        if (holdNote.scoreable)
         {
           if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
           {
