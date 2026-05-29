@@ -3226,7 +3226,7 @@ class PlayState extends MusicBeatSubState
       // Get the offset and compensate for input latency.
       // Round inward (trim remainder) for consistency.
       var consumedLength:Int = Std.int(Math.max(0, Conductor.instance.songPosition - holdNote.strumTime - inputLatencyMs));
-      var remainingLength:Int = Std.int(Math.max(0, (holdNote.strumTime + holdNote.fullSustainLength) - Conductor.instance.songPosition - inputLatencyMs));
+      var remainingLength:Int = Std.int(Math.max(0, (holdNote.strumTime + holdNote.fullSustainLength) - Conductor.instance.songPosition + inputLatencyMs));
       event.hitDiff = remainingLength;
       event.score = Constants.SCORE_HOLD_BONUS_PER_SECOND * consumedLength / Constants.MS_PER_SEC;
 
