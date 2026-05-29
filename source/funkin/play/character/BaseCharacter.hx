@@ -599,6 +599,26 @@ class BaseCharacter extends Bopper
   }
 
   /**
+   * Every time a hold note is held, check if it is of the same strumline before updating the hold timer.
+   */
+  public override function onNoteHoldHit(event:HoldNoteScriptEvent)
+  {
+    super.onNoteHoldHit(event);
+
+    // If another script cancelled the event, don't do anything.
+    if (event.eventCanceled) return;
+
+    if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
+    {
+      holdTimer = 0;
+    }
+    else if (!event.holdNote.noteData.getMustHitNote() && characterType == DAD)
+    {
+      holdTimer = 0;
+    }
+  }
+
+  /**
    * Every time a note is missed, check if the note is from the same strumline.
    * If it is, then play the sing animation.
    */
@@ -630,7 +650,7 @@ class BaseCharacter extends Bopper
     super.onNoteHoldDrop(event);
 
     // If another script cancelled the event, don't do anything.
-    if (event.eventCanceled) return;
+    if (event.eventCanceled || !event.isComboBreak) return;
 
     if (event.holdNote.noteData.getMustHitNote() && characterType == BF)
     {
