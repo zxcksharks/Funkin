@@ -3181,7 +3181,7 @@ class PlayState extends MusicBeatSubState
     if (holdNote.scoreable)
     {
       health += healthChange;
-      holdNote.appliedScore = scoreChange;
+      holdNote.appliedScore += scoreChange;
     }
   }
 
