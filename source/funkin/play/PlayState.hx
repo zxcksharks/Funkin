@@ -2986,7 +2986,6 @@ class PlayState extends MusicBeatSubState
 
       pendingPoints += holdNote.appliedScore;
       SongScore.instance.setPendingScore(pendingPoints);
-      trace('Pending points: ${pendingPoints}');
     }
   }
 
