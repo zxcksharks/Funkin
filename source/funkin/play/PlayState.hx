@@ -3091,7 +3091,7 @@ class PlayState extends MusicBeatSubState
 
     while (inputReleaseQueue.length > 0)
     {
-      var input:Null<PreciseInputEvent> = inputReleaseQueue.shift();
+      var input:Null<PreciseInputEvent> = inputReleaseQueue.pop();
       if (input == null) continue;
 
       // Play the strumline animation.
