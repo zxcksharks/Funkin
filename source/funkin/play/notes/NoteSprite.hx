@@ -2,6 +2,7 @@ package funkin.play.notes;
 
 import funkin.data.song.SongData.SongNoteData;
 import funkin.data.song.SongData.NoteParamData;
+import funkin.play.notes.attributes.NoteAttributes;
 import funkin.play.notes.notestyle.NoteStyle;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.HSVShader;
@@ -51,7 +52,24 @@ class NoteSprite extends FunkinSprite
   }
 
   /**
-   * An extra attribute for the note.
+   * Attributes for the note.
+   * For example, whether the note has no animations, or if it is non-scorable. May also be used by scripts.
+   */
+  public var attributes(get, set):Null<Map<String, NoteParamData>>;
+
+  function get_attributes():Null<Map<String, NoteParamData>>
+  {
+    return this.noteData?.attributes;
+  }
+
+  function set_attributes(value:Map<String, NoteParamData>):Map<String, NoteParamData>
+  {
+    if (this.noteData == null) return value;
+    return this.noteData.attributes = value;
+  }
+
+  /**
+   * An extra identifier for the note.
    * For example, whether the note is an "alt" note, or whether it has custom behavior on hit.
    */
   public var kind(get, set):Null<String>;

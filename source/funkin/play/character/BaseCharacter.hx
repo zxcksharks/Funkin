@@ -552,37 +552,20 @@ class BaseCharacter extends Bopper
     super.onNoteHit(event);
     // If another script cancelled the event, don't do anything.
     if (event.eventCanceled) return;
-    curNoteKind = NoteKindManager.getNoteKind(event.note.noteData.kind);
 
     if (event.note.noteData.getMustHitNote() && characterType == BF)
     {
-      if (curNoteKind != null)
+      if (!attributes.exists('noanim'))
       {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        this.playSingAnimation(event.note.noteData.getDirection(), false, attributes?.get('suffix')[0].value);
         holdTimer = 0;
       }
     }
     else if (!event.note.noteData.getMustHitNote() && characterType == DAD)
     {
-      if (curNoteKind != null)
+      if (!attributes.exists('noanim'))
       {
-        if (!curNoteKind.noanim)
-        {
-          this.playSingAnimation(event.note.noteData.getDirection(), false, curNoteKind?.suffix);
-          holdTimer = 0;
-        }
-      }
-      else
-      {
-        this.playSingAnimation(event.note.noteData.getDirection(), false);
+        this.playSingAnimation(event.note.noteData.getDirection(), false, attributes?.get('suffix')[0].value);
         holdTimer = 0;
       }
     }

@@ -331,7 +331,7 @@ class PolymodHandler
     // `haxe.Http`
     // An alias for `sys.Http`, which is also a blacklisted package.
     Polymod.blacklistImport('haxe.Http');
-    
+
     // `haxe.Unserializer`
     // Unserializer.DEFAULT_RESOLVER.resolveClass() can access blacklisted packages
     Polymod.blacklistImport('haxe.Unserializer');
@@ -623,7 +623,10 @@ class PolymodHandler
     FreeplayStyleRegistry.instance.loadEntries();
 
     CharacterDataParser.loadCharacterCache(); // TODO: Migrate characters to BaseRegistry.
+
+    NoteAttributeManager.initialize();
     NoteKindManager.initialize();
+
     ModuleHandler.loadModuleCache();
     ModuleHandler.callOnCreate();
   }

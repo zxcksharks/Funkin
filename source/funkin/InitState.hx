@@ -303,6 +303,7 @@ class InitState extends FlxState
     // Move it to use a BaseRegistry.
     CharacterDataParser.loadCharacterCache();
 
+    NoteAttributeManager.initialize();
     NoteKindManager.initialize();
 
     ModuleHandler.buildModuleCallbacks();

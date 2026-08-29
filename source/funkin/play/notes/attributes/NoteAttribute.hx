@@ -1,4 +1,4 @@
-package funkin.play.notes.notekind;
+package funkin.play.notes.attributes;
 
 import funkin.modding.IScriptedClass.INoteScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -6,66 +6,37 @@ import funkin.modding.events.ScriptEvent;
 /**
  * Class for note scripts
  */
-class NoteKind implements INoteScriptedClass
+class NoteAttribute implements INoteScriptedClass
 {
   /**
-   * The name of the note kind
+   * The name of the note attribute
    */
-  public var noteKind:String;
-
-  /**
-   * Description used in chart editor
-   */
-  public var description:String;
-
-  /**
-   * Custom note style
-   */
-  public var noteStyleId:Null<String>;
-
-  /**
-   * Whether or not the sing animation should play.
-   */
-  public var noanim:Bool;
-
-  /**
-   * The animation suffix to use.
-   */
-  public var suffix:String;
+  public var name:String;
 
   /**
    * Custom parameters for the chart editor
    */
-  public var params:Array<NoteKindParam>;
+  public var params:Array<NoteAttributeParam>;
 
   /**
-   * Parameters present by default for this notekind
+   * If this parameter is present in all notes by default.
    */
-  public var attributes:Array<String>;
+  public var presentByDefault:Bool;
 
-  /**
-   * Set this to `false` to disable scoring for this note.
-   * The note will no longer count towards ratings, points, or accuracy.
-   * @default `true` to enable scoring.
-   */
-  public var scoreable(default, default):Bool = true;
-
-  public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?attributes:Array<String>)
+  public function new(name:String, ?params:Array<NoteAttributeParam>, presentByDefault:Bool = false)
   {
-    this.noteKind = noteKind;
-    this.description = description;
-    this.noteStyleId = noteStyleId;
+    this.name = name;
     this.params = params ?? [];
-    this.attributes = attributes ?? [];
+    this.presentByDefault = presentByDefault;
   }
 
   public function toString():String
   {
-    return noteKind;
+    return name;
   }
 
   /**
-   * Retrieve all notes of this kind
+   * Retrieve all notes with this attribute
    * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
@@ -74,12 +45,12 @@ class NoteKind implements INoteScriptedClass
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite)
     {
-      return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
+      return note != null && note.noteData.attributes.exists(this.name) && (!visibleCheck || note.visible);
     });
   }
 
   /**
-   * Retrieve all notes NOT of this kind
+   * Retrieve all notes WITHOUT this attribute
    * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
@@ -88,7 +59,7 @@ class NoteKind implements INoteScriptedClass
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite)
     {
-      return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
+      return note != null && note.noteData.attributes.exists(this.name) && (!visibleCheck || note.visible);
     });
   }
 
@@ -126,17 +97,17 @@ class NoteKind implements INoteScriptedClass
 }
 
 /**
- * Abstract for setting the type of the `NoteKindParam`
- * This was supposed to be an enum but polymod kept being annoying
+ * Abstract for setting the type of the `NoteAttributeParam`
+ * This would be an enum but apparently polymod is annoying?
  */
-abstract NoteKindParamType(String) from String to String
+abstract NoteAttributeParamType(String) from String to String
 {
   public static final STRING:String = 'String';
   public static final INT:String = 'Int';
   public static final FLOAT:String = 'Float';
 }
 
-typedef NoteKindParamData =
+typedef NoteAttributeParamData =
 {
   /**
    * If `min` is null, there is no minimum
@@ -160,10 +131,9 @@ typedef NoteKindParamData =
 /**
  * Typedef for creating custom parameters in the chart editor
  */
-typedef NoteKindParam =
+typedef NoteAttributeParam =
 {
   name:String,
-  description:String,
   type:NoteKindParamType,
   ?data:NoteKindParamData
 }
