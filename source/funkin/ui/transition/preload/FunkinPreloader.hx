@@ -404,6 +404,7 @@ class FunkinPreloader extends FlxBasePreloader
           futures.push(StickerRegistry.instance.loadEntriesAsync());
           futures.push(FreeplayStyleRegistry.instance.loadEntriesAsync());
           futures.push(SongEventRegistry.loadEventCacheAsync());
+          futures.push(NoteAttributeManager.loadNoteAttributesAsync());
           futures.push(NoteKindManager.loadNoteKindsAsync());
           futures.push(CharacterDataParser.loadCharacterCacheAsync());
           futures.push(ModuleHandler.loadModuleCacheAsync());

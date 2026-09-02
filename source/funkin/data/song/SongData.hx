@@ -109,7 +109,8 @@ class SongMetadata implements ICloneable<SongMetadata> implements ISerializable
    * or formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -268,7 +269,10 @@ class SongOffsets implements ICloneable<SongOffsets>
   @:optional @:default([])
   public var altVocals:Map<String, Map<String, Float>>;
 
-  public function new(instrumental:Float = 0.0, ?altInstrumentals:Map<String, Float>, ?vocals:Map<String, Float>, ?altVocals:Map<String, Map<String, Float>>)
+  public function new(instrumental:Float = 0.0,
+    ?altInstrumentals:Map<String, Float>,
+    ?vocals:Map<String, Float>,
+    ?altVocals:Map<String, Map<String, Float>>)
   {
     this.instrumental = instrumental;
     this.altInstrumentals = altInstrumentals == null ? new Map<String, Float>() : altInstrumentals;
@@ -538,7 +542,13 @@ class SongCharacterData implements ICloneable<SongCharacterData>
   @:optional
   public var playerVocals:Null<Array<String>> = null;
 
-  public function new(player:String = '', girlfriend:String = '', opponent:String = '', instrumental:String = '', ?altInstrumentals:Array<String>, ?opponentVocals:Array<String>, ?playerVocals:Array<String>)
+  public function new(player:String = '',
+    girlfriend:String = '',
+    opponent:String = '',
+    instrumental:String = '',
+    ?altInstrumentals:Array<String>,
+    ?opponentVocals:Array<String>,
+    ?playerVocals:Array<String>)
   {
     this.player = player;
     this.girlfriend = girlfriend;
@@ -600,7 +610,9 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   @:jignored
   public var variation:String;
 
-  public function new(scrollSpeed:Map<String, Float>, events:Array<SongEventData>, notes:Map<String, Array<SongNoteData>>)
+  public function new(scrollSpeed:Map<String, Float>,
+    events:Array<SongEventData>,
+    notes:Map<String, Array<SongNoteData>>)
   {
     this.version = SongRegistry.SONG_CHART_DATA_VERSION;
 
@@ -666,7 +678,8 @@ class SongChartData implements ICloneable<SongChartData> implements ISerializabl
   /**
    * Convert this SongChartData into a JSON string.
    */
-  public function serialize(pretty:Bool = true, ?params:json2object.JsonWriterParams):String
+  public function serialize(pretty:Bool = true,
+    ?params:json2object.JsonWriterParams):String
   {
     // Update generatedBy and version before writing.
     updateVersionToLatest();
@@ -1307,13 +1320,26 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   @:alias("p") @:default([]) @:optional
   public var params:Array<NoteParamData>;
 
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  /**
+   * The attributes of the note.
+   * Used for customizable behavior on notes. Defaults to an empty map.
+   */
+  @:alias("a") @:default([]) @:optional
+  public var attributes:Map<String, Array<NoteParamData>>;
+
+  public function new(time:Float,
+    data:Int,
+    length:Float = 0,
+    kind:String = '',
+    ?params:Array<NoteParamData>,
+    ?attributes:Map<String, Array<NoteParamData>>)
   {
     this.time = time;
     this.data = data;
     this.length = length;
     this.kind = kind;
     this.params = params ?? [];
+    this.attributes = attributes ?? [];
   }
 
   /**
@@ -1445,12 +1471,50 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
   }
 
   /**
+   * Clone specific `params` data from this node's attributes, creating a new independent instance.
+   * @return A new array of cloned `NoteParamData` instances.
+   */
+  public function cloneAttributeParams(attribute:String):Array<NoteParamData>
+  {
+    var newParams:Array<NoteParamData> = [];
+    var attribute = this.attributes.get(attribute);
+
+    if (attribute != null)
+    {
+      for (param in attribute.params)
+      {
+        newParams.push(param.clone());
+      }
+    }
+    return newParams;
+  }
+
+  /**
+   * Clone the `attributes` data for this node, creating a new independent instance.
+   * @return A new map of cloned `NoteParamData` instances.
+   */
+  public function cloneAttributes():Map<String, Array<NoteParamData>>
+  {
+    var newAttributes:Map<String, Array<NoteParamData>> = [];
+    for (attribute => params in this.attributes)
+    {
+      var newParams:Array<NoteParamData> = [];
+      for (param in attribute.params)
+      {
+        newParams.push(param.clone());
+      }
+      newAttributes.set(attribute, newParams);
+    }
+    return newAttributes;
+  }
+
+  /**
    * Clone this song note data, creating a new independent instance with identical data.
    * @return The newly created song note data.
    */
   public function clone():SongNoteDataRaw
   {
-    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams());
+    return new SongNoteDataRaw(this.time, this.data, this.length, this.kind, cloneParams(), cloneAttributes());
   }
 
   public function toString():String
@@ -1493,9 +1557,14 @@ class SongNoteDataRaw implements ICloneable<SongNoteDataRaw>
 @:forward
 abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 {
-  public function new(time:Float, data:Int, length:Float = 0, kind:String = '', ?params:Array<NoteParamData>)
+  public function new(time:Float,
+    data:Int,
+    length:Float = 0,
+    kind:String = '',
+    ?params:Array<NoteParamData>,
+    ?attributes:Map<String, Array<NoteParamData>>)
   {
-    this = new SongNoteDataRaw(time, data, length, kind, params);
+    this = new SongNoteDataRaw(time, data, length, kind, params, attributes);
   }
 
   public static function buildDirectionName(data:Int, strumlineSize:Int = 4):String
@@ -1605,7 +1674,7 @@ abstract SongNoteData(SongNoteDataRaw) from SongNoteDataRaw to SongNoteDataRaw
 
   public function clone():SongNoteData
   {
-    return new SongNoteData(this.time, this.data, this.length, this.kind, this.params);
+    return new SongNoteData(this.time, this.data, this.length, this.kind, this.params, this.attributes);
   }
 
   /**

@@ -583,11 +583,11 @@ class BaseCharacter extends Bopper
    */
   public function playNoteSingAnimation(noteData:SongNoteData, judgement:Null<String> = null, comboCount:Int = 0):Void
   {
-     curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
     // Let the character naturally transition back to their idle/dance animation
     // if the notekind is set to noanim.
-    if (curNoteKind != null && curNoteKind.noanim) return;
+    if (noteData.attributes.exists('noanim')) return;
 
+    curNoteKind = NoteKindManager.getNoteKind(noteData.kind);
     if (noteData.getMustHitNote() && characterType == BF)
     {
       this.playSingAnimation(noteData.getDirection(), false, curNoteKind?.suffix ?? '');

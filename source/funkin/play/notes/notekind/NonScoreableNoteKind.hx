@@ -9,13 +9,7 @@ class NonScoreableNoteKind extends NoteKind
 {
   public function new()
   {
-    super('non_scoreable', 'Non-scoreable');
+    super('non_scoreable', 'Non-scoreable', null, [], ['non_scoreable']);
     scoreable = false;
-  }
-
-  override public function onNoteMiss(event:NoteScriptEvent):Void
-  {
-    event.note.visible = false;
-    event.cancel();
   }
 }
